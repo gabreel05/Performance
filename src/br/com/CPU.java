@@ -18,16 +18,22 @@ public class CPU {
         PC = address;
 
         regA = cache.Read(PC++);
-        regB = cache.Read(PC++);
+        regB = cache.Read(address + 800);
 
-        regC = 1;
+        regC = 15;
 
-        while (regA <= regB) {
-            cache.Write(regA, regC);
-            io.Output("> " + regA + " -> " + regC);
+//        while (regA <= regB) {
+//            cache.Write(regA, regC);
+//            io.Output("> " + regA + " -> " + regC);
+//
+//            ++regC;
+//            ++regA;
+//        }
 
-            ++regC;
-            ++regA;
-        }
+        cache.Write(0b00000001001_0000010_010000, 13);
+        System.out.println(cache.Read(0b00000001001_0000010_010000));
+
+        cache.Write(0b00000001011_0000011_010000, 124);
+        System.out.println(cache.Read(0b00000001001_0000010_010000));
     }
 }
