@@ -34,16 +34,20 @@ public class Cache implements Memory {
             setBitWiseOperations(address);
         }
 
+        System.out.println("Returned value " + data[rAddress][wAddress] + " in " + rAddress + " " + wAddress);
         return data[rAddress][wAddress];
     }
 
     @Override
     public void Write(int address, int value) {
         if (VerifyAddress(address)) {
-            System.out.println("Cache miss on address: " + Integer.toBinaryString(address));
+            setBitWiseOperations(address);
+            changeCache(address);
+            System.out.println("Value " + value + " written.");
             data[rAddress][wAddress] = value;
         } else {
-            System.out.println("Cache hit on address: " + Integer.toBinaryString(address));
+            setBitWiseOperations(address);
+            System.out.println("Value " + value + " written.");
             data[rAddress][wAddress] = value;
         }
     }
@@ -54,7 +58,6 @@ public class Cache implements Memory {
 
         if (tCPU != tAddress) {
             System.out.println("Cache miss on address: " + Integer.toBinaryString(address));
-            changeCache(address);
 
             return true;
         }
