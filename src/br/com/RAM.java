@@ -1,8 +1,9 @@
 package br.com;
 
 public class RAM implements Memory {
+
+    private final int size;
     private final int[] data;
-    private int size = 0;
 
     public RAM(int size) {
         this.size = size;
@@ -12,18 +13,18 @@ public class RAM implements Memory {
     @Override
     public int Read(int address) throws InvalidAddressException {
         VerifyAddress(address);
-        return data[address];
+        return this.data[address];
     }
 
     @Override
     public void Write(int address, int value) throws InvalidAddressException {
         VerifyAddress(address);
-        data[address] = value;
+        this.data[address] = value;
     }
 
     @Override
     public void VerifyAddress(int address) throws InvalidAddressException {
-        if (address < 0 || address > size) {
+        if (address < 0 || address > this.size) {
             throw new InvalidAddressException(address);
         }
     }
