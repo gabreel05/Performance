@@ -1,68 +1,59 @@
 package br.com;
 
-import java.util.Arrays;
-
 public class Cache implements Memory {
     private final RAM ram;
     private int[][] data;
+    private int wAddress;
 
-    boolean flag;
+    private int rAddress;
 
-    private int w;
+    private int tAddress;
 
-    private int r;
+    private int sAddress;
 
-    private int t;
-
-    private int s;
-
-    Block block;
+    private final Block block;
 
     public Cache(RAM ram) {
         this.data = new int[128][64];
         this.ram = ram;
-        this.block = ram.getBlocks().get(t);
+        this.block = ram.getBlocks().get(tAddress);
     }
 
     public void setBitWiseOperations(int address) {
-        s = address >> 6;
-        w = (int) (address % Math.pow(2 ,6));
-        t = address >> 13;
-        r = (int) ((address >> 6) % Math.pow(2, 7));
+        sAddress = address >> 6;
+        wAddress = (int) (address % Math.pow(2 ,6));
+        tAddress = address >> 13;
+        rAddress = (int) ((address >> 6) % Math.pow(2, 7));
     }
 
     @Override
     public int Read(int address) throws InvalidAddressException {
         if (VerifyAddress(address)) {
-            System.out.println("Cache miss on address: " + Integer.toBinaryString(address));
+            setBitWiseOperations(address);
         } else {
-//            System.out.println("Cache hit on address: " + Integer.toBinaryString(address));
+            setBitWiseOperations(address);
         }
 
-        return data[r][w];
+        return data[rAddress][wAddress];
     }
 
     @Override
-    public void Write(int address, int value) throws InvalidAddressException {
+    public void Write(int address, int value) {
         if (VerifyAddress(address)) {
             System.out.println("Cache miss on address: " + Integer.toBinaryString(address));
-            System.out.println("Estou escrevendo " + value + " em " + r + " " + w);
-            data[r][w] = value;
+            data[rAddress][wAddress] = value;
         } else {
             System.out.println("Cache hit on address: " + Integer.toBinaryString(address));
-            System.out.println("Estou escrevendo " + value + " em " + r + " " + w);
-            data[r][w] = value;
+            data[rAddress][wAddress] = value;
         }
     }
 
     @Override
-    public boolean VerifyAddress(int address) throws InvalidAddressException {
+    public boolean VerifyAddress(int address) {
         int tCPU = address >> 13;
 
-        System.out.println("Minha tag é" + t  + " e a tag da CPU é " + tCPU);
-
-        if (tCPU != t) {
-            System.out.println("Estou trocando de cache");
+        if (tCPU != tAddress) {
+            System.out.println("Cache miss on address: " + Integer.toBinaryString(address));
             changeCache(address);
 
             return true;
@@ -72,21 +63,11 @@ public class Cache implements Memory {
     }
 
     private void changeCache(int address) {
+        ram.getBlocks().get(tAddress).setData(data);
         setBitWiseOperations(address);
 
-        if (block.tag != t) {
-
-            Block ramBlock = ram.getBlocks().get(t);
-
-//            System.out.println(Arrays.deepToString(ramBlock.data));
-
-            ramBlock.data = data;
-            data = block.data;
-
-            ram.getBlocks().set(t, ramBlock);
-//            System.out.println(Arrays.deepToString(ramBlock.data));
-//            System.out.println(Arrays.deepToString(data));
+        if (block.getTag() != tAddress) {
+            data = ram.getBlocks().get(tAddress).getData();
         }
-
     }
 }
